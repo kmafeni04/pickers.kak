@@ -336,16 +336,19 @@ provide-module pickers %{
   define-command -hidden _pickers-grep-on-change %{
     _pickers-on-change-impl '*pickers-grep*' %{
       if [ -n "$git_base_dir" ]; then
-        $kak_opt_grepcmd "$kak_quoted_text" $(
+        $(
           (git ls-files --cached --modified --others --deduplicate --exclude-standard 2>/dev/null || find . -type f | sed "s|\./||g") |
             while read -r file; do
               if [ -f "$file" ]; then
                 printf "%s\n" "$file"
               fi
             done
-        )
+        ) | xargs $kak_opt_grepcmd "$kak_quoted_text"
       else
-        $kak_opt_grepcmd "$kak_quoted_text" $(grep -RIl '.' 2>/dev/null | head -n $kak_opt_pickers_grep_result_limit | sed 's|^\./||g')
+        grep -RIl '.' 2>/dev/null |
+          head -n $kak_opt_pickers_grep_result_limit |
+          sed 's|^\./||g' |
+          xargs $kak_opt_grepcmd "$kak_quoted_text" 2>/dev/null
       fi
     }
   }
@@ -365,7 +368,7 @@ provide-module pickers %{
       set-option global _pickers_grep_last_search ''
       unset-option window idle_timeout
       evaluate-commands %sh{
-        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g")
+        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
         if [ "$kak_opt_pickers_grep_set_slash_register" = true ]; then
           printf '%s\n' "set-register / '$query'"
         fi
@@ -375,7 +378,7 @@ provide-module pickers %{
       }
       execute-keys '%'
       evaluate-commands -save-regs '/' %sh{
-        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g")
+        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
         printf '%s\n' "set-register / '$query'"
         if [ "$kak_cursor_line" -eq 1 ] && [ "$kak_cursor_column" -gt 1 ]; then
           printf '%s\n' "pickers-grep-open"
