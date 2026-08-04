@@ -34,4 +34,17 @@ map global pickers g ':pickers-grep<ret>' -docstring "Open grep picker in git ro
 map global pickers G "<dquote>/y:pickers-grep<ret>" -docstring "Open grep picker in git root with selection as init"
 map global pickers <a-g> ':pickers-grep-cbd<ret>' -docstring "Open grep picker in buffer's directory"
 map global pickers <a-G> "<dquote>/y:pickers-grep-cbd<ret>" -docstring "Open grep picker in buffer's directory with selection as init"
+
+hook global WinCreate \*pickers-grep\* %{
+  map window normal <ret> ':pickers-grep-open<ret>'
+  map window normal <a-ret> "%%s<ret>)" -docstring "Select all matched grep text"
+  alias window write pickers-grep-write
+  alias window w pickers-grep-write
+}
+hook global WinCreate \*pickers-file\* %{
+  map window normal <ret> ':pickers-file-open<ret>'
+}
+hook global WinCreate \*pickers-buffer\* %{
+  map window normal <ret> ':pickers-buffer-open<ret>'
+}
 ```
