@@ -2,7 +2,7 @@
 
 A set of file pickers for kakoune using grep as the interface
 
-![demo.gif](demo.gif)
+[![asciicast](https://asciinema.org/a/ZM3LnRugTnJGm6V8.svg)](https://asciinema.org/a/ZM3LnRugTnJGm6V8)
 
 ## Dependencies
 - git: (optional: will fallback to `find`)
