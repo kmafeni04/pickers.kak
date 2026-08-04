@@ -362,7 +362,7 @@ provide-module pickers %{
     } \
     -on-change _pickers-grep-on-change \
     %{
-      set-option window _pickers_grep_last_search ''
+      set-option global _pickers_grep_last_search ''
       unset-option window idle_timeout
       evaluate-commands %sh{
         query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g")
@@ -370,7 +370,7 @@ provide-module pickers %{
           printf '%s\n' "set-register / '$query'"
         fi
         if [ "$kak_opt_pickers_grep_save_last_search" = true ]; then
-          printf '%s\n' "set-option window _pickers_grep_last_search '$query'"
+          printf '%s\n' "set-option global _pickers_grep_last_search '$query'"
         fi
       }
       execute-keys '%'
@@ -387,7 +387,6 @@ provide-module pickers %{
           printf '%s\n' "try %§
             execute-keys '%<a-s>s[^:]*:[0-9]+:([0-9]+:)?<ret>l<a-l>'
             execute-keys 's<ret>)'
-            set-option window pickers_grep_select_matches false
           §"
         elif [ "$kak_cursor_column" -gt 1 ]; then
           printf '%s\n' "execute-keys n"
@@ -411,4 +410,3 @@ provide-module pickers %{
 }
 
 require-module pickers
-
