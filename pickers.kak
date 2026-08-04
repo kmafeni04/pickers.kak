@@ -336,14 +336,14 @@ provide-module pickers %{
   define-command -hidden _pickers-grep-on-change %{
     _pickers-on-change-impl '*pickers-grep*' %{
       if [ -n "$git_base_dir" ]; then
-        $(
+        (
           (git ls-files --cached --modified --others --deduplicate --exclude-standard 2>/dev/null || find . -type f | sed "s|\./||g") |
             while read -r file; do
               if [ -f "$file" ]; then
                 printf "%s\n" "$file"
               fi
             done
-        ) | xargs $kak_opt_grepcmd "$kak_quoted_text"
+        ) | xargs $kak_opt_grepcmd "$kak_quoted_text" 2>/dev/null
       else
         grep -RIl '.' 2>/dev/null |
           head -n $kak_opt_pickers_grep_result_limit |
