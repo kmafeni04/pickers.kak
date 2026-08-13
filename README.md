@@ -28,12 +28,9 @@ map global pickers b ':pickers-buffer<ret>' -docstring 'Open fuzzy buffer picker
 map global pickers i ':pickers-buffer-info<ret>' -docstring 'Show currently open buffers'
 map global pickers a ':pickers-buffer-alternate<ret>' -docstring 'Switch to previously opened buffer'
 map global pickers f ':pickers-file<ret>' -docstring 'Open fuzzy file picker in git root or current working directory'
-map global pickers n ':pickers-file /home/kome/Documents/Nextcloud/Notes/<ret>' -docstring 'Open fuzzy file picker in notes directory'
 map global pickers o ':pickers-file-cbd<ret>' -docstring "Open fuzzy file picker in current buffer's directory"
 map global pickers g ':pickers-grep<ret>' -docstring "Open grep picker in git root"
-map global pickers G "<dquote>/y:pickers-grep<ret>" -docstring "Open grep picker in git root with selection as init"
 map global pickers <a-g> ':pickers-grep-cbd<ret>' -docstring "Open grep picker in buffer's directory"
-map global pickers <a-G> "<dquote>/y:pickers-grep-cbd<ret>" -docstring "Open grep picker in buffer's directory with selection as init"
 
 hook global WinCreate \*pickers-grep\* %{
   map window normal <ret> ':pickers-grep-open<ret>'
