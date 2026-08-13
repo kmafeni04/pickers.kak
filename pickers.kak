@@ -399,7 +399,7 @@ provide-module pickers %{
   }
 
   define-command pickers-grep -params ..1 \
-  -docstring "pickers-grep [<direcotry>]: Open the gre picker at $CWD or <directory>" \
+  -docstring "pickers-grep [<direcotry>]: Open the grep picker at $CWD or <directory>" \
   %{
     _pickers-grep-impl %arg{1}
   }
