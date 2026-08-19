@@ -76,8 +76,11 @@ provide-module pickers %{
 
       query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
       printf "set-option window _pickers_grep_current_search '%s'\n" "$query"
+      if [ "$kak_quoted_text" = '.' ]; then
+        exit
+      fi
+      printf "add-highlighter -override window/pickers_match regex '(?i)%s' 0:cyan+bu\n" "$query"
     }
-    try %{ add-highlighter -override window/pickers_match regex "(?i)%opt{_pickers_grep_current_search}" 0:cyan+bu } # Using try incase %opt{_pickers_grep_current_search} does not exist yet
   }
 
   define-command -hidden _pickers-open-impl -params 3..4 %{
