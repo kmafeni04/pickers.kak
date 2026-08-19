@@ -19,6 +19,7 @@ provide-module pickers %{
   declare-option -hidden str _pickers_current_buffer
   declare-option -hidden str _pickers_cbd
   declare-option -hidden str _pickers_grep_last_search
+  declare-option -hidden str _pickers_grep_current_search
 
   hook global WinDisplay .* %{
     try %{
@@ -66,7 +67,17 @@ provide-module pickers %{
 
       eval "$1"
     } -- %arg{2} %arg{3}
-    try %{ add-highlighter -override window/pickers_match regex "(?i)%val{text}" 0:cyan+bu } # Using try incase %val{text} does not exist yet
+    set-option global _pickers_grep_current_search ''
+    evaluate-commands %sh{
+      if [ -z "$kak_quoted_text" ]; then
+        [ -z "$3" ] && exit
+        kak_quoted_text="$3" # Initial text
+      fi
+
+      query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
+      printf "set-option window _pickers_grep_current_search '%s'\n" "$query"
+    }
+    try %{ add-highlighter -override window/pickers_match regex "(?i)%opt{_pickers_grep_current_search}" 0:cyan+bu } # Using try incase %opt{_pickers_grep_current_search} does not exist yet
   }
 
   define-command -hidden _pickers-open-impl -params 3..4 %{
@@ -358,7 +369,7 @@ provide-module pickers %{
     _pickers-grep-on-change
     set-option window filetype grep
     set-option window idle_timeout %opt{pickers_timeout}
-    prompt "grep:" -init %opt{_pickers_grep_last_search} \
+    prompt "grep:" -init "%opt{_pickers_grep_last_search}" \
     -on-abort %{
       unset-option window idle_timeout
       delete-buffer '*pickers-grep*'
@@ -368,18 +379,18 @@ provide-module pickers %{
       set-option global _pickers_grep_last_search ''
       unset-option window idle_timeout
       evaluate-commands %sh{
-        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
+        query="$kak_opt__pickers_grep_current_search"
         if [ "$kak_opt_pickers_grep_set_slash_register" = true ]; then
-          printf '%s\n' "set-register / '$query'"
+          printf '%s\n' "set-register / %opt{_pickers_grep_current_search}"
         fi
         if [ "$kak_opt_pickers_grep_save_last_search" = true ]; then
-          printf '%s\n' "set-option global _pickers_grep_last_search '$query'"
+          grep_query=$(printf '%s' "$kak_text" | sed "s/'/''/g")
+          printf "set-option global _pickers_grep_last_search '%s'\n" "$grep_query"
         fi
       }
       execute-keys '%'
       evaluate-commands -save-regs '/' %sh{
-        query=$(printf '%s' "$kak_quoted_text" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
-        printf '%s\n' "set-register / '$query'"
+        printf '%s\n' "set-register / %opt{_pickers_grep_current_search}"
         if [ "$kak_cursor_line" -eq 1 ] && [ "$kak_cursor_column" -gt 1 ]; then
           printf '%s\n' "pickers-grep-open"
           printf '%s\n' "execute-keys 'xs<ret>'"
