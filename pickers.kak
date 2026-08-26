@@ -288,13 +288,13 @@ provide-module pickers %{
     evaluate-commands -no-hooks -buffer * %{
       set-option -add global _pickers_buflist "%val{bufname}"
     }
-    evaluate-commands -save-regs '/flce' -draft %{
+    evaluate-commands -save-regs '/flsce' -draft %{
       execute-keys '%s^([^\n]+?):(\d+)(?::\d+)?:([^\n]*)$<ret>'
       evaluate-commands -itersel %{
         set-register f %reg{1}
         set-register l %reg{2}
         set-register c %reg{3}
-        set-register e "0"
+        set-register e 0
 
         try %{
           evaluate-commands -draft %{
@@ -307,15 +307,19 @@ provide-module pickers %{
                 file="$git_base_dir/$file"
               fi
               printf "edit -existing %s\n" "$file"
+
+              kak_reg_s=$(printf '%s' "$kak_quoted_reg_c" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
+              kak_reg_s=$(printf '%s' "$kak_quoted_reg_c" | sed 's/|/\\|/g')
+              printf "set-register s '%s'\n" "$kak_reg_s"
             }
 
-            execute-keys "%reg{l}gx"
+            execute-keys "%reg{l}gx_"
 
             try %{
-              set-register / "%reg{c}$"
+              set-register / "%reg{s}$"
               execute-keys 's<ret>'
             } catch %{
-              execute-keys 'H"cR'
+              execute-keys '"cR'
               write
             }
 
