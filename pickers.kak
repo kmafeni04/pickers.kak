@@ -383,10 +383,14 @@ provide-module pickers %{
     } \
     -on-change _pickers-grep-on-change \
     %{
+      evaluate-commands %sh{
+        if [ "$kak_opt_pickers_grep_save_last_search" = true ]; then
+          printf '%s\n' "_pickers-grep-on-change"
+        fi
+      }
       set-option global _pickers_grep_last_search ''
       unset-option window idle_timeout
       evaluate-commands %sh{
-        query="$kak_opt__pickers_grep_current_search"
         if [ "$kak_opt_pickers_grep_set_slash_register" = true ]; then
           printf '%s\n' "set-register / %opt{_pickers_grep_current_search}"
         fi
