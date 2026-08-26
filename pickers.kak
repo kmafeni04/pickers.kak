@@ -79,7 +79,7 @@ provide-module pickers %{
       if [ "$kak_quoted_text" = '.' ]; then
         exit
       fi
-      printf "add-highlighter -override window/pickers_match regex '(?i)%s' 0:cyan+bu\n" "$query"
+      printf "try %%{ add-highlighter -override window/pickers_match regex '(?i)%s' 0:cyan+bu }\n" "$query"
     }
   }
 
