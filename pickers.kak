@@ -289,6 +289,7 @@ provide-module pickers %{
       set-option -add global _pickers_buflist "%val{bufname}"
     }
     evaluate-commands -save-regs '/flsce' -draft %{
+      echo "Updating files..."
       execute-keys '%s^([^\n]+?):(\d+)(?::\d+)?:([^\n]*)$<ret>'
       evaluate-commands -itersel %{
         set-register f %reg{1}
