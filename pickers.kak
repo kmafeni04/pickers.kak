@@ -314,7 +314,7 @@ provide-module pickers %{
               printf "set-register s '%s'\n" "$kak_reg_s"
             }
 
-            execute-keys "%reg{l}gx_"
+            execute-keys "%reg{l}gx"
 
             try %{
               set-register / "%reg{s}$"
