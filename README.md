@@ -45,3 +45,32 @@ hook global WinCreate \*pickers-buffer\* %{
   map window normal <ret> ':pickers-buffer-open<ret>'
 }
 ```
+
+## Tests
+
+No terminal is needed: the integration cases drive a headless `kak` through
+the json ui, so nothing has to be typed by hand.
+
+```sh
+./test/run.sh               # lint, unit and integration
+./test/run.sh lint          # static checks only
+./test/run.sh unit          # shell blocks under dash, no Kakoune
+./test/run.sh integration   # headless Kakoune sessions
+```
+
+- `test/lint.sh` checks that the braces balance, that every `%sh{}` block
+  parses under dash, that public commands carry a `-docstring`, that every
+  `_pickers_` option is declared, that the commands mapped in this README
+  exist, and that the test scripts are shellcheck clean.
+- `test/unit/run.sh` extracts the path and quoting shell blocks from the
+  plugin and runs them under dash with a fake Kakoune environment.
+- `test/integration/*.sh` build a picker buffer, run the commands that act on
+  it and assert on the resulting buffers and files.
+
+The picker prompts themselves are not driven: the harness starts kak with `-n`,
+which skips Kakoune's rc and with it the `fifo` module the prompts read from.
+The tests exercise the commands that run inside the picker buffers instead.
+
+`dash` is required for the lint and unit cases, `kak` for the integration
+cases, and `shellcheck` is optional. Scratch files go to `$TMPDIR` (default
+`/tmp`).

@@ -309,12 +309,11 @@ provide-module pickers %{
               fi
               printf "edit -existing %s\n" "$file"
 
-              kak_reg_s=$(printf '%s' "$kak_quoted_reg_c" | sed "s/'/''/g;s/(/\\\\(/g;s/)/\\\\)/g;s/{/\\\\{/g;s/}/\\\\}/g")
-              kak_reg_s=$(printf '%s' "$kak_quoted_reg_c" | sed 's/|/\\|/g')
-              printf "set-register s '%s'\n" "$kak_reg_s"
+              kak_reg_s=$(printf '%s' "$kak_quoted_reg_c" | sed 's/[][\\.*^$(){}+?|]/\\&/g')
+              printf "set-register s %s\n" "$kak_reg_s"
             }
 
-            execute-keys "%reg{l}gx"
+            execute-keys "%reg{l}G;<a-l>"
 
             try %{
               set-register / "%reg{s}$"
